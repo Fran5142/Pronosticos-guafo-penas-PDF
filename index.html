@@ -99,7 +99,7 @@
   background: #fff;
   color: #000;
   margin: 30px auto;
-  padding: 20mm 40mm 40mm 40mm;
+  padding: 20mm 20mm 30mm 20mm;
   font-family: Arial, sans-serif;
   font-size: 12pt;
   line-height: 1.35;
@@ -150,7 +150,7 @@
     text-transform: none;
     display: block;
     width: 95%;
-    border-radius: 6px;
+    border-radius: 0px;
     box-sizing: border-box;
   }
 
@@ -202,6 +202,7 @@
   border-radius: 6px;
   display: block;
   width: 95%;
+  height: 25px;   /* o 100px, 120px, etc */
   box-sizing: border-box;
 }
 
@@ -332,7 +333,13 @@ texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)<
 texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
 
 // 🔹 Poner EMITIDO: o EMITIDO en negrita automáticamente
-texto = texto.replace(/\bEmitido:?/gi, '<span class="negrita">Emitido:</span>');
+// 🔹 Solo "EMITIDO:" en negrita — el resto en mayúsculas sin negrita
+texto = texto.replace(/(emitido:)([^\n]*)/gi, (match, p1, p2) => {
+    const titulo = p1.toUpperCase();      // EMITIDO:
+    const resto = p2.toUpperCase();       // Todo lo demás
+    return `<span class="negrita">${titulo}</span>${resto}`;
+});
+
 
 return texto;
 
@@ -361,8 +368,19 @@ function generarVista(){
   const listaMayus=document.getElementById("palabrasMayus").value.split(",");
   if(!texto){alert("Por favor, pega el texto del informe meteorológico."); return;}
   const lineas=texto.split("\n");
-  const primerasDos=lineas.slice(0,2).map(l=>`<div class="encabezado-principal">${l}</div>`).join("");
-  const libres=lineas.slice(2,5).map(l=>`<div class="parrafo-libre">${l}</div>`).join("");
+ // 🔹 LÍNEAS 1 y 2
+let primerasDos = lineas.slice(0, 2)
+  .map(l => `<div class="encabezado-principal">${l}</div>`)
+  .join("");
+
+// 🔹 Agregar espacio automático entre la línea 2 y 3
+primerasDos += `<div style="height:18px;"></div>`;   // Puedes ajustar 18px si quieres más/menos espacio
+
+// 🔹 LÍNEAS 3, 4 y 5
+const libres = lineas.slice(2, 5)
+  .map(l => `<div class="parrafo-libre">${l}</div>`)
+  .join("");
+
   const resto=lineas.slice(5).join("\n");
   const textoProcesado=formatearTexto(resto,listaMayus);
   const htmlFormateado=aplicarFormatoHTML(textoProcesado);
@@ -394,3 +412,4 @@ function reiniciar(){
 </script>
 </body>
 </html>
+
