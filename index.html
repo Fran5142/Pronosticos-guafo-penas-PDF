@@ -24,6 +24,7 @@
     font-size: 26px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-top: -10px;  /* 🔹 Subir la primera línea */
     margin-bottom: 25px;
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   }
@@ -202,7 +203,7 @@
   border-radius: 6px;
   display: block;
   width: 95%;
-  height: 25px;   /* o 100px, 120px, etc */
+  height: 25px; 
   box-sizing: border-box;
 }
 
@@ -328,21 +329,16 @@ function formatearTexto(texto,listaMayus){
     }
   });
 
-// 🔹 Mantener (MAL TIEMPO) y (TEMPORAL) en mayúscula y negrita incluyendo paréntesis
-texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
-texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
+  texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
+  texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
 
-// 🔹 Poner EMITIDO: o EMITIDO en negrita automáticamente
-// 🔹 Solo "EMITIDO:" en negrita — el resto en mayúsculas sin negrita
-texto = texto.replace(/(emitido:)([^\n]*)/gi, (match, p1, p2) => {
-    const titulo = p1.toUpperCase();      // EMITIDO:
-    const resto = p2.toUpperCase();       // Todo lo demás
-    return `<span class="negrita">${titulo}</span>${resto}`;
-});
+  texto = texto.replace(/(emitido:)([^\n]*)/gi, (match, p1, p2) => {
+      const titulo = p1.toUpperCase();      
+      const resto = p2.toUpperCase();       
+      return `<span class="negrita">${titulo}</span>${resto}`;
+  });
 
-
-return texto;
-
+  return texto;
 }
 
 function aplicarFormatoHTML(texto){
@@ -368,18 +364,16 @@ function generarVista(){
   const listaMayus=document.getElementById("palabrasMayus").value.split(",");
   if(!texto){alert("Por favor, pega el texto del informe meteorológico."); return;}
   const lineas=texto.split("\n");
- // 🔹 LÍNEAS 1 y 2
-let primerasDos = lineas.slice(0, 2)
-  .map(l => `<div class="encabezado-principal">${l}</div>`)
-  .join("");
 
-// 🔹 Agregar espacio automático entre la línea 2 y 3
-primerasDos += `<div style="height:18px;"></div>`;   // Puedes ajustar 18px si quieres más/menos espacio
+  let primerasDos = lineas.slice(0, 2)
+    .map(l => `<div class="encabezado-principal">${l}</div>`)
+    .join("");
 
-// 🔹 LÍNEAS 3, 4 y 5
-const libres = lineas.slice(2, 5)
-  .map(l => `<div class="parrafo-libre">${l}</div>`)
-  .join("");
+  primerasDos += `<div style="height:18px;"></div>`;
+
+  const libres = lineas.slice(2, 5)
+    .map(l => `<div class="parrafo-libre">${l}</div>`)
+    .join("");
 
   const resto=lineas.slice(5).join("\n");
   const textoProcesado=formatearTexto(resto,listaMayus);
@@ -391,14 +385,18 @@ async function generarPDF() {
   const { jsPDF } = window.jspdf;
   const vista = document.getElementById("vistaPrevia");
   vista.classList.add("generando-pdf");
+
+  // 🔹 PDF más liviano: escala 1 y JPEG calidad 0.8
   const canvas = await html2canvas(vista, { scale: 2, backgroundColor: "#ffffff" });
-  const imgData = canvas.toDataURL("image/png");
+  const imgData = canvas.toDataURL("image/jpeg", 0.8);
+
   const pdf = new jsPDF("p", "mm", "letter");
   const pageWidth = 216;
   const imgWidth = 210;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
   const nombreArchivo = document.getElementById("nombrePDF").value.trim() || "Informe_Meteorologico";
-  pdf.addImage(imgData, "PNG", (pageWidth - imgWidth) / 2, 10, imgWidth, imgHeight);
+
+  pdf.addImage(imgData, "JPEG", (pageWidth - imgWidth) / 2, 10, imgWidth, imgHeight);
   pdf.save(nombreArchivo + ".pdf");
   vista.classList.remove("generando-pdf");
 }
