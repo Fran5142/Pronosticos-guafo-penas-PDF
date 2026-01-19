@@ -301,6 +301,26 @@ function reemplazarAbreviaturas(texto){
   texto=texto.replace(/\bMARITIMO\b/gi,'Marítimo');
   texto=texto.replace(/\bPUERTO\b/gi,'Puerto');
   texto=texto.replace(/\bMONTT\b/gi,'Montt');
+
+  texto = texto.replace(/\bMIERCOLES\b/gi,'Miércoles');
+
+  return texto;
+}
+
+function corregirTildesContexto(texto) {
+
+  // 1️⃣ ANTICICLÓNICO al inicio de frase
+  texto = texto.replace(
+    /(^|[.!?\n]\s*)(ANTICICLONICO)\b/gi,
+    (m, inicio) => `${inicio}Anticiclónico`
+  );
+
+  // 2️⃣ anticiclónico dentro de la frase
+  texto = texto.replace(
+    /\bANTICICLONICO\b/gi,
+    "anticiclónico"
+  );
+
   return texto;
 }
 
@@ -318,6 +338,7 @@ function formatearTexto(texto,listaMayus){
   });
   texto=corregirDireccionesViento(texto);
   texto=reemplazarAbreviaturas(texto);
+  texto = corregirTildesContexto(texto); // 👈 AQUÍ
 
   listaMayus.forEach(palabra=>{
     const palabraTrim=palabra.trim();
