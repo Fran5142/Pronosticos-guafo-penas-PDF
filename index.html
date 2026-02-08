@@ -348,6 +348,12 @@ function capitalizarTexto(str){
 function formatearTexto(texto,listaMayus){
   const lineasEspeciales=texto.match(/.*(TEMPERATURA\s+MINIMA\s+PROBABLE|TEMPERATURA\s+MAXIMA\s+PROBABLE|INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA|MET\d+).*/gim)||[];
   texto=texto.toLowerCase();
+// 🔹 Forzar MAYÚSCULAS para direcciones compuestas tipo W/NW, N/NE, etc.
+texto = texto.replace(
+  /\b([nsew])\/([nsew]{1,2})\b/gi,
+  (m) => m.toUpperCase()
+);
+
   texto=texto.replace(/(^|[.!?\n]\s*)([a-záéíóúñ])/g,(m,sep,letra)=>sep+letra.toUpperCase());
   lineasEspeciales.forEach(linea=>{
     const original=linea.toUpperCase();
