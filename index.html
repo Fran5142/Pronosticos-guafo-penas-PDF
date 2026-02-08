@@ -367,15 +367,12 @@ function formatearTexto(texto,listaMayus){
   });
 
 
-listaMayus.forEach(palabra=>{
-  const palabraTrim=palabra.trim();
-  const regex=new RegExp("\\b"+palabraTrim+"\\b","gi");
-  if (palabraTrim.toUpperCase().startsWith("MET")) {
-    texto = texto.replace(regex, `<span class="negrita" data-met="true">${palabraTrim.toUpperCase()}</span>`);
-  } else {
-    texto = texto.replace(regex,palabraTrim.toUpperCase());
-  }
-});
+// 🔹 Forzar MAYÚSCULAS y NEGRITA para cualquier MET*****
+texto = texto.replace(
+  /\b(met\d+[a-z]*)\b/gi,
+  (match) => `<br><span class="negrita">${match.toUpperCase()}</span>`
+);
+
 
 // 👇 SIEMPRE AL FINAL
 texto = corregirTildesContexto(texto);
