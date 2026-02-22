@@ -348,9 +348,14 @@ function capitalizarTexto(str){
 function formatearTexto(texto,listaMayus){
   const lineasEspeciales=texto.match(/.*(TEMPERATURA\s+MINIMA\s+PROBABLE|TEMPERATURA\s+MAXIMA\s+PROBABLE|INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA|MET\d+).*/gim)||[];
   texto=texto.toLowerCase();
-// 🔹 Forzar MAYÚSCULAS para direcciones compuestas tipo W/NW, N/NE, etc.
+
+// 🔹 Forzar MAYÚSCULAS para AM y PM
+texto = texto.replace(/\b(am|pm)\b/gi, (m) => m.toUpperCase());
+
+// 🔹 Forzar MAYÚSCULAS para TODAS las combinaciones de viento tipo:
+// N/NW, NW/W, W/NW, S/SW, SW/W, SW/E, E/SW, etc.
 texto = texto.replace(
-  /\b([nsew])\/([nsew]{1,2})\b/gi,
+  /\b([nsew]{1,2})\/([nsew]{1,2})\b/gi,
   (m) => m.toUpperCase()
 );
 
@@ -455,3 +460,4 @@ function reiniciar(){
 </script>
 </body>
 </html>
+
